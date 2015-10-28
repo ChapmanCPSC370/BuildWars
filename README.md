@@ -5,11 +5,13 @@ In BuildWars, the player first begins constructing the level platforms using fou
 BuildWars is written in Python using the PyGame API.
 
 Some example code:
-'''
+
+The main game loop:
+
+```
 running = True
     while running:
         clock.tick(60)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -20,7 +22,7 @@ running = True
                 new_block.rect.y = 300
                 standard_block_list.add(new_block)
                 all_sprites.add(new_block)
-'''
+```
 
 # Motivation
 
@@ -36,9 +38,7 @@ PyGame Download: <a href="http://www.pygame.org/download.shtml">PyGame Download<
 
 Once those are downloaded on your local machine, you can retrieve the project by opening up your command line and entering:
 
-'''
-git clone "https://github.com/ChapmanCPSC370/BuildWars.git"
-'''
+```git clone "https://github.com/ChapmanCPSC370/BuildWars.git" ```
 
 Now that the project has been cloned to your machine, you can run it by opening the Python IDLE, clicking 'File'->'Open'
 and selecting the stagebuilder.py script. A python script should appear and then you can click "Run"->"Run Module" to run the game.
