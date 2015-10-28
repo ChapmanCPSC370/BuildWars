@@ -65,14 +65,12 @@ class Player(pygame.sprite.Sprite):
         self.x = 200
         self.y = 200
 
-    def movementKeys(self):
-        "Controls the player sprite using the following keys"
+    def update(self):
         key = pygame.key.get_pressed()
-        movementDistance = 1
         if key[pygame.K_RIGHT]:
-            self.x += movementDistance
+            self.x += 10
         elif key[pygame.K_LEFT]:
-            self.x -= movementDistance
+            self.x -= 10
 
     def punch(self, target):
         if not self.punching:
@@ -132,7 +130,6 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
     pygame.display.set_caption('BuildWars')
-    pygame.mouse.set_visible(0)
 
     #Create The Backgound
     background = pygame.Surface(screen.get_size())
@@ -165,7 +162,6 @@ def main():
     running = True
     while running:
         clock.tick(60)
-        player.movementKeys()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
