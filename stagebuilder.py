@@ -11,6 +11,7 @@ if not pygame.font:
     print 'Warning! Fonts disabled'
 
 
+# Color Constants
 GREY = (128,128,128)
 LIGHT_GREY = (224,224,224)
 DARK_GREY = (64,64,64)
@@ -18,8 +19,30 @@ FIRE_RED = (255,85,0)
 GREEN = (0,255,0)
 BLACK = (0,0,0)
 
+# loads an image for a Sprite
+def loadImage(name, colorKey=None):
+    
+    # get image's full name to load
+    fullName = os.path.join('images', name)
+    
+    try:
+        img = pygame.image.load(fullName)
+    except pygame.error, msg:
+        print 'Unable to load image: ', name
+        raise SystemExit, msg
+    
+    img = img.convert()
+    
+    if colorKey is not None:
+        # grab the top-left pixel in image and use its color
+        if colorKey is -1:
+            colorKey = img.get_at((0,0))
+            
+        img.set_colorkey(colorKey, RLEACCEL)
+        
+    return img, img.get_rect()
 
-
+# Stage Building Blocks and other classes needed
 class StandardBlock(pygame.sprite.Sprite):
 
     def __init__(self, color, width, height):
@@ -58,6 +81,34 @@ class FireBlock(pygame.sprite.Sprite):
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.passable = False
+
+class BuilderTarget(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = loadImage('block_target.bmp', -1)
+        self.block_color = DARK_GREY
+        self.rect.x = 0
+        self.rect.y = 100
+        self.change_x = 0
+        self.change_y = 0
+
+    def moveDown(self):
+        if self.rect.y != 550:
+            self.rect.move(0,50)
+
+    def moveUp(self):
+        if self.rect.y != 100:
+            self.change_y = -50
+
+    def moveRight(self):
+        if self.rect.x != 950:
+            self.change_x = 50
+
+    def moveLeft(self):
+        if self.rect.x != 0:
+            self.change_x = -50
+
 
 
 def main():
@@ -123,38 +174,51 @@ def main():
     
 
     running = True
+    in_building_phase = True
     new_block = None
     while running:
         clock.tick(60)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                pygame.quit()
-            if event.type == KEYDOWN and event.key == K_b:
-                new_block = StandardBlock(DARK_GREY,50,50)
-                
-            if event.type == KEYDOWN and event.key == K_p:
-                new_block = PassableBlock(DARK_GREY,50,15)
-                
-            if event.type == KEYDOWN and event.key == K_s:
-                new_block = SpringBlock(GREEN,50,50)
-                
-            if event.type == KEYDOWN and event.key == K_f:
-                new_block = FireBlock(FIRE_RED,50,50)
-                
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if new_block != None:
-                    x, y = pygame.mouse.get_pos()
-                    new_block.rect.x = x
-                    new_block.rect.y = y
-                    all_sprites.add(new_block)
-                
+        # building phase first
+        if in_building_phase:
+            
+            target_block_spot = BuilderTarget()
+            all_sprites.add(target_block_spot)
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                if event.type == KEYDOWN and event.key == K_b:
+                    target_block_spot.image.fill(DARK_GREY)
+                    
+                if event.type == KEYDOWN and event.key == K_p:
+                    new_block = PassableBlock(DARK_GREY,50,15)
+                    
+                if event.type == KEYDOWN and event.key == K_s:
+                    new_block = SpringBlock(GREEN,50,50)
+                    
+                if event.type == KEYDOWN and event.key == K_f:
+                    new_block = FireBlock(FIRE_RED,50,50)
+                    
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if new_block != None:
+                        x, y = pygame.mouse.get_pos()
+                        new_block.rect.x = x
+                        new_block.rect.y = y
+                        all_sprites.add(new_block)
 
-        all_sprites.update()
+                if event.type == KEYDOWN and event.key == K_DOWN:
+                    target_block_spot.moveDown()
+                    all_sprites.update()
+                    
+                    
+                    
 
-        screen.blit(background, (0,0))
-        all_sprites.draw(screen)
-        pygame.display.flip()
+            all_sprites.update()
+
+            screen.blit(background, (0,0))
+            all_sprites.draw(screen)
+            pygame.display.flip()
                 
 main()
