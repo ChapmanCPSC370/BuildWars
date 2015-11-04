@@ -45,42 +45,51 @@ def loadImage(name, colorKey=None):
 # Stage Building Blocks and other classes needed
 class StandardBlock(pygame.sprite.Sprite):
 
-    def __init__(self, color, width, height):
+    def __init__(self, color, x_coord, y_coord):
         super(StandardBlock, self).__init__()
-        self.image = pygame.Surface([width, height])
+        self.image = pygame.Surface([50, 50])
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.passable = False
+        self.rect.x = x_coord
+        self.rect.y = y_coord
 
 
 class PassableBlock(pygame.sprite.Sprite):
 
-    def __init__(self, color, width, height):
+    def __init__(self, color, x_coord, y_coord):
         super(PassableBlock, self).__init__()
-        self.image = pygame.Surface([width, height])
+        self.image = pygame.Surface([50,15])
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.passable = True
+        self.rect.x = x_coord
+        self.rect.y = y_coord
 
 
 class SpringBlock(pygame.sprite.Sprite):
 
-    def __init__(self, color, width, height):
+    def __init__(self, color, x_coord, y_coord):
         super(SpringBlock, self).__init__()
-        self.image = pygame.Surface([width, height])
+        self.image = pygame.Surface([50,50])
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.passable = False
+        self.rect.x = x_coord
+        self.rect.y = y_coord
 
 
 class FireBlock(pygame.sprite.Sprite):
 
-    def __init__(self, color, width, height):
+    def __init__(self, color, x_coord, y_coord):
         super(FireBlock, self).__init__()
-        self.image = pygame.Surface([width, height])
+        self.image = pygame.Surface([50,50])
         self.image.fill(color)
         self.rect = self.image.get_rect()
         self.passable = False
+        self.rect.x = x_coord
+        self.rect.y = y_coord
+        
 
 class BuilderTarget(pygame.sprite.Sprite):
 
@@ -90,24 +99,29 @@ class BuilderTarget(pygame.sprite.Sprite):
         self.block_color = DARK_GREY
         self.rect.x = 0
         self.rect.y = 100
-        self.change_x = 0
-        self.change_y = 0
+        self.selected_block = ""
 
     def moveDown(self):
         if self.rect.y != 550:
-            self.rect.move(0,50)
+            self.rect.y += 50
 
     def moveUp(self):
         if self.rect.y != 100:
-            self.change_y = -50
+            self.rect.y -= 50
 
     def moveRight(self):
         if self.rect.x != 950:
-            self.change_x = 50
+            self.rect.x += 50
 
     def moveLeft(self):
         if self.rect.x != 0:
-            self.change_x = -50
+            self.rect.x -= 50
+
+    def checkSelectedBlock(self):
+        if self.selected_block == "":
+            return False
+        else:
+            return True
 
 
 
@@ -176,13 +190,15 @@ def main():
     running = True
     in_building_phase = True
     new_block = None
+
+    target_block_spot = BuilderTarget()
+    
     while running:
         clock.tick(60)
 
         # building phase first
         if in_building_phase:
             
-            target_block_spot = BuilderTarget()
             all_sprites.add(target_block_spot)
             
             for event in pygame.event.get():
@@ -190,28 +206,45 @@ def main():
                     running = False
                     pygame.quit()
                 if event.type == KEYDOWN and event.key == K_b:
-                    target_block_spot.image.fill(DARK_GREY)
+                    target_block_spot.selected_block = "standard"
                     
                 if event.type == KEYDOWN and event.key == K_p:
-                    new_block = PassableBlock(DARK_GREY,50,15)
+                    target_block_spot.selected_block = "passable"
                     
                 if event.type == KEYDOWN and event.key == K_s:
-                    new_block = SpringBlock(GREEN,50,50)
+                    target_block_spot.selected_block = "spring"
                     
                 if event.type == KEYDOWN and event.key == K_f:
-                    new_block = FireBlock(FIRE_RED,50,50)
+                    target_block_spot.selected_block = "fire"
                     
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if new_block != None:
-                        x, y = pygame.mouse.get_pos()
-                        new_block.rect.x = x
-                        new_block.rect.y = y
-                        all_sprites.add(new_block)
-
                 if event.type == KEYDOWN and event.key == K_DOWN:
                     target_block_spot.moveDown()
-                    all_sprites.update()
-                    
+
+                if event.type == KEYDOWN and event.key == K_UP:
+                    target_block_spot.moveUp()
+
+                if event.type == KEYDOWN and event.key == K_RIGHT:
+                    target_block_spot.moveRight()
+
+                if event.type == KEYDOWN and event.key == K_LEFT:
+                    target_block_spot.moveLeft()
+
+                if event.type == KEYDOWN and event.key == K_RETURN:
+                    if target_block_spot.selected_block == "standard":
+                        new_block = StandardBlock(DARK_GREY, target_block_spot.rect.x, target_block_spot.rect.y)
+                    elif target_block_spot.selected_block == "passable":
+                        new_block = PassableBlock(DARK_GREY, target_block_spot.rect.x, target_block_spot.rect.y)
+                        print "pass"
+                    elif target_block_spot.selected_block == "spring":
+                        new_block = SpringBlock(GREEN, target_block_spot.rect.x, target_block_spot.rect.y)
+                        print "spring"
+                    elif target_block_spot.selected_block == "fire":
+                        new_block = FireBlock(FIRE_RED, target_block_spot.rect.x, target_block_spot.rect.y)
+                        print "fire"
+                    else:
+                        print "nada"
+
+                    all_sprites.add(new_block)
                     
                     
 
