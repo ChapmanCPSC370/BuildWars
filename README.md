@@ -27,9 +27,11 @@ running = True
 # Screenshots
 
 During stage build setup, before the user builds
+
 ![ScreenShot](https://github.com/ChapmanCPSC370/BuildWars/blob/screenshots/screenhshots/game_shot1.png)
 
 After the user has built a stage
+
 ![ScreenShot](https://github.com/ChapmanCPSC370/BuildWars/blob/screenshots/screenhshots/game_shot2.png)
 
 
