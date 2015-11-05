@@ -27,10 +27,10 @@ running = True
 # Screenshots
 
 During stage build setup, before the user builds
-![Alt text](/../screenshots/game_shot1.png?raw=true "Shot1")
+![ScreenShot](https://raw.github.com/ChapmanCPSC370/BuildWars/screenshots/game_shot1.png)
 
 After the user has built a stage
-![Alt text](/../screenshots/game_shot2g?raw=true "Shot2")
+![ScreenShot](https://raw.github.com/ChapmanCPSC370/BuildWars/screenshots/game_shot2.png)
 
 
 # Motivation
