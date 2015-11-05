@@ -24,6 +24,15 @@ running = True
                 all_sprites.add(new_block)
 ```
 
+# Screenshots
+
+During stage build setup, before the user builds
+![Alt text](/../screenshots/game_shot1.png?raw=true "Shot1")
+
+After the user has built a stage
+![Alt text](/../screenshots/game_shot2g?raw=true "Shot2")
+
+
 # Motivation
 
 What makes this game unique, is not the gameplay, but rather the fact that the player gets to build every level they play on. This allows players to express their creativity in a way that other games do not. There is something unique about designing and constructing the level you are about to play on. Therefor, the most important aspect of BuildWars is the stage building aspect. 
