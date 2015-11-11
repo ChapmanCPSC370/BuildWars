@@ -5,6 +5,7 @@
 
 import os, sys
 import pygame
+import random
 from pygame.locals import *
 
 if not pygame.font:
@@ -42,14 +43,21 @@ def loadImage(name, colorKey=None):
         
     return img, img.get_rect()
 
+# returns a random number for the height of the player
+def getRandomHeight():
+    return random.randrange(0,550)
+
+def getRandomWidth():
+    return random.randrange(0,950)
+    
+    
+
 # Stage Building Blocks and other classes needed
 class StandardBlock(pygame.sprite.Sprite):
 
     def __init__(self, color, x_coord, y_coord):
-        super(StandardBlock, self).__init__()
-        self.image = pygame.Surface([50, 50])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = loadImage('standard_block.bmp', -1)
         self.passable = False
         self.rect.x = x_coord
         self.rect.y = y_coord
@@ -60,8 +68,8 @@ class PassableBlock(pygame.sprite.Sprite):
     def __init__(self, color, x_coord, y_coord):
         super(PassableBlock, self).__init__()
         self.image = pygame.Surface([50,15])
-        self.image.fill(color)
         self.rect = self.image.get_rect()
+        self.image.fill(DARK_GREY)
         self.passable = True
         self.rect.x = x_coord
         self.rect.y = y_coord
@@ -70,10 +78,8 @@ class PassableBlock(pygame.sprite.Sprite):
 class SpringBlock(pygame.sprite.Sprite):
 
     def __init__(self, color, x_coord, y_coord):
-        super(SpringBlock, self).__init__()
-        self.image = pygame.Surface([50,50])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = loadImage('spring_block.bmp', -1)
         self.passable = False
         self.rect.x = x_coord
         self.rect.y = y_coord
@@ -82,10 +88,8 @@ class SpringBlock(pygame.sprite.Sprite):
 class FireBlock(pygame.sprite.Sprite):
 
     def __init__(self, color, x_coord, y_coord):
-        super(FireBlock, self).__init__()
-        self.image = pygame.Surface([50,50])
-        self.image.fill(color)
-        self.rect = self.image.get_rect()
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = loadImage('fire_block.bmp', -1)
         self.passable = False
         self.rect.x = x_coord
         self.rect.y = y_coord
@@ -96,7 +100,6 @@ class BuilderTarget(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = loadImage('block_target.bmp', -1)
-        self.block_color = DARK_GREY
         self.rect.x = 0
         self.rect.y = 100
         self.selected_block = ""
@@ -122,6 +125,24 @@ class BuilderTarget(pygame.sprite.Sprite):
             return False
         else:
             return True
+
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image, self.rect = loadImage('pacman.bmp', -1)
+        self.rect.x = getRandomWidth()
+        self.rect.y = getRandomHeight()
+
+    def moveRight(self):
+        if self.rect.x != 960:
+            self.rect.x += 10
+
+    def moveLeft(self):
+        if self.rect.x != 10:
+            self.rect.x -= 10
+        
 
 
 
@@ -189,9 +210,9 @@ def main():
 
     running = True
     in_building_phase = True
-    new_block = None
 
     target_block_spot = BuilderTarget()
+    player = None
     
     while running:
         clock.tick(60)
@@ -234,24 +255,42 @@ def main():
                         new_block = StandardBlock(DARK_GREY, target_block_spot.rect.x, target_block_spot.rect.y)
                     elif target_block_spot.selected_block == "passable":
                         new_block = PassableBlock(DARK_GREY, target_block_spot.rect.x, target_block_spot.rect.y)
-                        print "pass"
                     elif target_block_spot.selected_block == "spring":
                         new_block = SpringBlock(GREEN, target_block_spot.rect.x, target_block_spot.rect.y)
-                        print "spring"
                     elif target_block_spot.selected_block == "fire":
                         new_block = FireBlock(FIRE_RED, target_block_spot.rect.x, target_block_spot.rect.y)
-                        print "fire"
-                    else:
-                        print "nada"
 
                     all_sprites.add(new_block)
-                    
-                    
+
+                if event.type == KEYDOWN and event.key == K_SPACE:
+                    in_building_phase = False
+                    player = Player()
+                    all_sprites.add(player)
+                    # remove building sprites and header
 
             all_sprites.update()
-
             screen.blit(background, (0,0))
             all_sprites.draw(screen)
             pygame.display.flip()
+
+        else:
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                if event.type == KEYDOWN and event.key == K_RIGHT:
+                    player.moveRight()
+                if event.type == KEYDOWN and event.key == K_LEFT:
+                    player.moveLeft()
+
+            all_sprites.update()
+            screen.blit(background, (0,0))
+            all_sprites.draw(screen)
+            pygame.display.flip()
+                
+
+                    
+                
                 
 main()
